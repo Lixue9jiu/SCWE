@@ -26,6 +26,11 @@ namespace SCWE
             terrainReader.Load(File.OpenRead(datFile));
         }
 
+        public bool ChunkExists(int x, int z)
+        {
+            return terrainReader.ChunkExist(x, z);
+        }
+
         public bool ChunkLoaded(int x, int z)
         {
             return chunks.ContainsKey(new Vector2Int(x, z));

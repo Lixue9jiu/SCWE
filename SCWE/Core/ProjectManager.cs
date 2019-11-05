@@ -39,7 +39,7 @@ namespace SCWE
             {
                 var m = ms[i];
                 m.Transform(new Matrix4x4(
-                        -1, 0, 0, 0,
+                        1, 0, 0, 0,
                         0, 0, 1, 0,
                         0, 1, 0, 0,
                         0, 0, 0, 1) * Matrix4x4.Translate(new Vector3(-(chunkx << TerrainChunk.SizeXShift), 0, -(chunkz << TerrainChunk.SizeZShift))));
@@ -48,6 +48,29 @@ namespace SCWE
                     ModelExporter.ExportPly(m, s);
                 }
             }
+        }
+
+        public static int CheckChunkCount(int chunkx, int chunkz, int radius)
+        {
+            var terrain = WorldManager.World.Terrain;
+
+            int count = 0;
+            var center = new Vector2(chunkx, chunkz);
+            int startx = chunkx - radius;
+            int startz = chunkz - radius;
+            int size = 2 * radius;
+
+            for (int z = 0; z < size; z++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    var pos = new Vector2Int(x + startx, z + startz);
+                    if (terrain.ChunkExists(x + startx, z + startz) && Vector2.Distance(pos, center) < radius)
+                        count++;
+                }
+            }
+
+            return count;
         }
 
         public static Mesh[] GenerateMesh(int chunkx, int chunkz, int radius)
@@ -60,7 +83,6 @@ namespace SCWE
             int startz = chunkz - radius;
             int size = 2 * radius;
 
-            Console.WriteLine($"generating mesh for chunks: {startx}, {startz} to {startx + size}, {startz + size}");
             for (int z = 0; z < size; z++)
             {
                 for (int x = 0; x < size; x++)
@@ -81,7 +103,7 @@ namespace SCWE
                     if (terrain.ChunkLoaded(pos.x, pos.y) && Vector2.Distance(pos, center) < radius)
                     {
                         generator.GenerateChunkMesh(pos.x, pos.y, terrain);
-                        Console.WriteLine($"generated {pos.x}, {pos.y}");
+                        Console.WriteLine($"generated chunk mesh: {pos.x}, {pos.y}");
                         result.Add(generator.TerrainMesh.PushToMesh());
                     }
                 }

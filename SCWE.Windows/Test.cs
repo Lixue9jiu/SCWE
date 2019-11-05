@@ -9,7 +9,7 @@ namespace SCWEWindows
 {
     class Test
     {
-        static void Main(string[] args)
+        static void TestMain(string[] args)
         {
             //MeshTest();
             //ChunkTest();
