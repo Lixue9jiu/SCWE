@@ -37,15 +37,38 @@ namespace SCWE
             Mesh[] ms = GenerateMesh(chunkx, chunkz, radius);
             for (int i = 0; i < ms.Length; i++)
             {
-                var m = ms[i];
-                m.Transform(new Matrix4x4(
+                ms[i].Transform(new Matrix4x4(
                         1, 0, 0, 0,
                         0, 0, 1, 0,
                         0, 1, 0, 0,
                         0, 0, 0, 1) * Matrix4x4.Translate(new Vector3(-(chunkx << TerrainChunk.SizeXShift), 0, -(chunkz << TerrainChunk.SizeZShift))));
-                using (Stream s = File.OpenWrite(Path.Combine(outputDir, i + ".ply")))
+            }
+
+            if (ms.Length > 0)
+            {
+                List<Mesh> list = new List<Mesh>(ms);
+                List<Mesh> output = new List<Mesh>();
+                while (list.Count > 1)
                 {
-                    ModelExporter.ExportPly(m, s);
+                    if (list[0].vertices.LongLength + list[1].vertices.LongLength > uint.MaxValue)
+                    {
+                        output.Add(list[0]);
+                        list.RemoveAt(0);
+                    }
+                    else
+                    {
+                        list[0].Append(list[1]);
+                        list.RemoveAt(1);
+                    }
+                }
+                output.Add(list[0]);
+
+                for (int i = 0; i < output.Count; i++)
+                {
+                    using (Stream s = File.OpenWrite(Path.Combine(outputDir, i + ".ply")))
+                    {
+                        ModelExporter.ExportPly(output[i], s);
+                    }
                 }
             }
         }
