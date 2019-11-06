@@ -29,6 +29,18 @@ namespace SCWE.Utils
             }
         }
 
+        public static void GetValueOrDefault<T>(this XElement elem, string name, out T value)
+        {
+            try
+            {
+                value = GetValue<T>(elem, name);
+            }
+            catch
+            {
+                value = default;
+            }
+        }
+
         public static void GetValueOrDefault<T>(this XElement elem, string name, out T value, T def)
         {
             try

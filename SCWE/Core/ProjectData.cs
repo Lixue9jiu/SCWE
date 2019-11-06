@@ -75,15 +75,15 @@ namespace SCWE
         public GameInfo(ProjectData project)
         {
             XElement e = project.GetSubsystem("GameInfo");
-            e.GetValue("WorldName", out WorldName);
-            e.GetValue("WorldSeedString", out WorldSeed);
-            e.GetValue("TerrainGenerationMode", out TerrainGenerationMode);
-            e.GetValue("TerrainLevel", out TerrainLevel);
-            e.GetValue("TerrainBlockIndex", out TerrainBlockIndex);
-            e.GetValue("TerrainOceanBlockIndex", out TerrainOceanBlockIndex);
-            e.GetValue("TemperatureOffset", out TemperatureOffset);
-            e.GetValue("HumidityOffset", out HumidityOffset);
-            e.GetValue("SeaLevelOffset", out SeaLevelOffset);
+            e.GetValueOrDefault("WorldName", out WorldName, "");
+            e.GetValueOrDefault("WorldSeedString", out WorldSeed, "");
+            e.GetValueOrDefault("TerrainGenerationMode", out TerrainGenerationMode, "");
+            e.GetValueOrDefault("TerrainLevel", out TerrainLevel);
+            e.GetValueOrDefault("TerrainBlockIndex", out TerrainBlockIndex);
+            e.GetValueOrDefault("TerrainOceanBlockIndex", out TerrainOceanBlockIndex);
+            e.GetValueOrDefault("TemperatureOffset", out TemperatureOffset);
+            e.GetValueOrDefault("HumidityOffset", out HumidityOffset);
+            e.GetValueOrDefault("SeaLevelOffset", out SeaLevelOffset);
             e.GetValueOrDefault("BiomeSize", out BiomeSize, 0);
             e.GetValueOrDefault("BlockTextureName", out BlockTextureName, "");
 
