@@ -47,6 +47,7 @@ namespace SCWE
             if (ms.Length > 0)
             {
                 List<Mesh> list = new List<Mesh>(ms);
+                Console.WriteLine(list.Count);
                 List<Mesh> output = new List<Mesh>();
                 while (list.Count > 1)
                 {
@@ -57,7 +58,9 @@ namespace SCWE
                     }
                     else
                     {
-                        list[0].Append(list[1]);
+                        var m = list[0];
+                        m.Append(list[1]);
+                        list[0] = m;
                         list.RemoveAt(1);
                     }
                 }

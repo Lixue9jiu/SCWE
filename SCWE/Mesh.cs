@@ -24,7 +24,7 @@ namespace SCWE
 
         public void Append(Mesh data)
         {
-            uint vCount = (uint)vertices.Length;
+            uint vCount = (uint)vertices.LongLength;
             vertices = MergeArray(vertices, data.vertices);
 
             uint[] tri = new uint[triangles.Length + data.triangles.Length];
