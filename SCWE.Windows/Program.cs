@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SCWE.Windows
 {
@@ -60,36 +61,43 @@ namespace SCWE.Windows
                 radius = 1;
             }
 
-            ProjectManager.Initialize(new ProjectManager.Config { blocksDataPath = Path.Combine(DataFolder, "BlocksData.csv"), blockMeshesPath = DataFolder });
-            ProjectManager.LoadWorld(TempFolder, worldFile);
-
-            if (!centerChunk.HasValue)
+            try
             {
-                var p = WorldManager.Project.PlayerPosition;
-                centerChunk = new Vector2Int((int)p.x >> 4, (int)p.z >> 4);
-            }
+                ProjectManager.Initialize(new ProjectManager.Config { dataPath = DataFolder });
+                ProjectManager.LoadWorld(TempFolder, worldFile);
 
-            string OutputFolder = Path.Combine(Path.GetDirectoryName(worldFile), Path.GetFileNameWithoutExtension(worldFile));
+                if (!centerChunk.HasValue)
+                {
+                    var p = WorldManager.Project.PlayerPosition;
+                    centerChunk = new Vector2Int((int)p.x >> 4, (int)p.z >> 4);
+                }
 
-            Console.WriteLine();
-            Console.WriteLine("配置完成");
-            Console.WriteLine("中心区块：" + centerChunk.Value);
-            Console.WriteLine("半径：" + radius);
-            Console.WriteLine("符合条件的区块有：{0} 个", ProjectManager.CheckChunkCount(centerChunk.Value.x, centerChunk.Value.y, radius));
-            Console.WriteLine("模型会被存入同目录下的 {0} 文件夹", OutputFolder);
+                string OutputFolder = Path.Combine(Path.GetDirectoryName(worldFile), Path.GetFileNameWithoutExtension(worldFile));
 
-            var f = Directory.Exists(OutputFolder) ? Directory.GetFiles(OutputFolder) : new string[0];
-            if (f.Length != 0)
-            {
+                int chunkCount = ProjectManager.CheckChunkCount(centerChunk.Value.x, centerChunk.Value.y, radius);
                 Console.WriteLine();
-                Console.WriteLine("！！！！！！！警告！！！！！！!");
-                Console.WriteLine("输出文件夹不是空的，继续生成会清空输出文件夹");
-                Console.WriteLine();
-            }
-            Console.Write("按Enter开始生成模型，按其他键退出");
+                Console.WriteLine("配置完成");
+                Console.WriteLine("中心区块：" + centerChunk.Value);
+                Console.WriteLine("半径：" + radius);
+                Console.WriteLine("符合条件的区块有：{0} 个", chunkCount);
+                Console.WriteLine("模型会被存入同目录下的 {0} 文件夹", OutputFolder);
 
-            if (Console.ReadKey(false).Key == ConsoleKey.Enter)
-            {
+                var f = Directory.Exists(OutputFolder) ? Directory.GetFiles(OutputFolder) : new string[0];
+                if (f.Length != 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("！！！！！！！警告！！！！！！!");
+                    Console.WriteLine("输出文件夹不是空的，继续生成会清空输出文件夹");
+                    Console.WriteLine();
+                }
+                Console.Write("按Enter开始生成模型，按其他键退出");
+
+                if (Console.ReadKey(true).Key != ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    return;
+                }
+
                 Console.WriteLine();
 
                 foreach (string file in f)
@@ -97,13 +105,32 @@ namespace SCWE.Windows
                     File.Delete(file);
                 }
 
+                Stopwatch watch = Stopwatch.StartNew();
                 ProjectManager.GenerateMesh(centerChunk.Value.x, centerChunk.Value.y, radius, OutputFolder);
-                Console.WriteLine("生成成功，总共生成了 {0} 个模型", Directory.GetFiles(OutputFolder).Length);
-                Console.Write("按Enter键退出");
-                Console.ReadLine();
-            }
+                Console.WriteLine("生成成功，总共生成了 {0} 个模型，用时 {1}ms", Directory.GetFiles(OutputFolder).Length, watch.ElapsedMilliseconds);
 
-            CleanUp();
+                Console.Write("按Enter键退出");
+                BlockUntilEnter();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("发生了错误");
+                Console.WriteLine(e);
+                Console.Write("按Enter键退出");
+                BlockUntilEnter();
+            }
+            finally
+            {
+                CleanUp();
+            }
+        }
+
+        static void BlockUntilEnter()
+        {
+            while (Console.ReadKey(true).Key != ConsoleKey.Enter)
+            {
+            }
+            Console.WriteLine();
         }
 
         static void CleanUp()

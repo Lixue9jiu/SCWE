@@ -26,13 +26,13 @@ namespace SCWEWindows
 
         static void BlockLoadingTest()
         {
-            ProjectManager.Initialize(new ProjectManager.Config { blocksDataPath = "../../data/BlocksData.csv", blockMeshesPath = "../../data" });
+            ProjectManager.Initialize(new ProjectManager.Config { dataPath = "../../data" });
             Console.ReadLine();
         }
 
         static void WorldLoadingTest()
         {
-            ProjectManager.Initialize(new ProjectManager.Config { blocksDataPath = "../../data/BlocksData.csv", blockMeshesPath = "../../data" });
+            ProjectManager.Initialize(new ProjectManager.Config { dataPath = "../../data" });
             ProjectManager.LoadWorld("temp", "../../data/Lancelot.scworld");
             var chunk = WorldManager.Project.PlayerPosition;
             ProjectManager.GenerateMesh((int)chunk.x >> 4, (int)chunk.z >> 4, 20, "output");
@@ -41,7 +41,7 @@ namespace SCWEWindows
 
         static void ChunkTest()
         {
-            ProjectManager.Initialize(new ProjectManager.Config { blocksDataPath = "BlocksData.csv" });
+            ProjectManager.Initialize(new ProjectManager.Config { });
             Terrain terrain = new Terrain();
             TerrainChunk chunk = new TerrainChunk();
             for (int z = 0; z < 16; z++)

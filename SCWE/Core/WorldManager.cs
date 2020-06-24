@@ -38,19 +38,36 @@ namespace SCWE
             ZipUtils.Unzip(stream, dir);
 
             CurrentWorldDir = dir;
-            if (!File.Exists(Path.Combine(dir, "Project.xml"))) throw new Exception("invalid world file");
+            if (!File.Exists(Path.Combine(dir, "Project.xml"))) throw new Exception("Project.xml not presented");
             Project = new ProjectData(dir);
-            ChunkDat = Path.Combine(dir, Project.Version >= 1.29f ? "Chunks32.dat" : "Chunk.dat");
+            string chunkFileName = Project.Version >= 2.2f ? "Chunks32h.dat" : Project.Version >= 1.29f ? "Chunks32.dat" : "Chunks.dat";
+            ChunkDat = Path.Combine(dir, chunkFileName);
             if (!File.Exists(ChunkDat)) 
             {
                 Project = null;
                 ChunkDat = null;
-                throw new Exception("invalid world file");
+                throw new Exception("Chunks.dat not presented");
             }
 
+            string blockDataPath = Path.Combine(ProjectManager.DataPath, "BlocksData129.csv");
+            if (chunkFileName == "Chunks32h.dat")
+            {
+                TerrainChunk.SetDimensions(16, 256, 16);
+            }
+            else
+            {
+                TerrainChunk.SetDimensions(16, 128, 16);
+            }
+            Console.WriteLine("initializing blocks...");
+            using (var s = File.OpenRead(blockDataPath))
+            {
+                BlocksManager.Initialize(s);
+            }
+
+            Console.WriteLine("loading world...");
             World = new World();
             World.Load();
-            OnWorldLoaded();
+            OnWorldLoaded?.Invoke();
         }
     }
 }

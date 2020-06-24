@@ -127,9 +127,17 @@ namespace SCWE
                 if (blockData.ContainsKey(i))
                 {
                     Block block = (Block)System.Activator.CreateInstance(definedBlocks[blockData[i].BlockType]);
-                    InitializeBlock(block, blockData[i]);
+                    try
+                    {
+                        InitializeBlock(block, blockData[i]);
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"error loading block: {i}, falling back to air");
+                        block = new CubeBlock();
+                        InitializeBlock(block, blockData[0]);
+                    }
                     b.Add(block);
-                    i++;
                 }
                 else
                 {
@@ -137,9 +145,11 @@ namespace SCWE
                     InitializeBlock(block, blockData[0]);
                     b.Add(block);
                 }
+                i++;
             }
 
             Blocks = b.ToArray();
+            Console.WriteLine($"blocks loaded: {Blocks.Length}");
 
             StandardCubeBlocks = new ICubeBlock[Blocks.Length];
             NormalBlocks = new INormalBlock[Blocks.Length];

@@ -19,6 +19,8 @@ namespace SCWE
 
         public void Load(ProjectData project)
         {
+            if (project.Version < 2f) return;
+
             XElement designs = project.GetSubsystem("FurnitureBlockBehavior").GetValues("FurnitureDesigns");
 
             List<Furniture> fs = new List<Furniture>();

@@ -6,17 +6,43 @@ namespace SCWE
 {
     public class TerrainChunk
     {
-        public const int SizeXShift = 4;
-        public const int SizeYShift = 7;
-        public const int SizeZShift = 4;
+        public static int SizeXShift { get; private set; }
+        public static int SizeYShift { get; private set; }
+        public static int SizeZShift { get; private set; }
+        
+        public static int SizeX { get; private set; }
+        public static int SizeY { get; private set; }
+        public static int SizeZ { get; private set; }
+        
+        public static int SizeXMinusOne { get; private set; }
+        public static int SizeYMinusOne { get; private set; }
+        public static int SizeZMinusOne { get; private set; }
 
-        public const int SizeX = 16;
-        public const int SizeY = 128;
-        public const int SizeZ = 16;
+        private static int Log2(int v)
+        {
+            int res = 0;
+            while (v > 0)
+            {
+                v = v >> 1;
+                res++;
+            }
+            return res > 0 ? res - 1 : 0;
+        }
 
-        public const int SizeXMinusOne = 15;
-        public const int SizeYMinusOne = 127;
-        public const int SizeZMinusOne = 15;
+        public static void SetDimensions(int x, int y, int z)
+        {
+            SizeX = x;
+            SizeY = y;
+            SizeZ = z;
+
+            SizeXMinusOne = x - 1;
+            SizeYMinusOne = y - 1;
+            SizeZMinusOne = z - 1;
+
+            SizeXShift = Log2(x);
+            SizeYShift = Log2(y);
+            SizeZShift = Log2(z);
+        }
 
         int[] cells;
         int[] shifts;

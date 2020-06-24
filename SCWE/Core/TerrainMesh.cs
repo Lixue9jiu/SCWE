@@ -9,6 +9,24 @@ namespace SCWE
         readonly List<Vector2> uvs = new List<Vector2>();
         readonly List<Color> colors = new List<Color>();
 
+        public int VertexCount => vertices.Count;
+
+        public void Append(TerrainMesh m)
+        {
+            vertices.AddRange(m.vertices);
+            triangles.AddRange(m.triangles);
+            uvs.AddRange(m.uvs);
+            colors.AddRange(m.colors);
+        }
+
+        public void Clear()
+        {
+            vertices.Clear();
+            triangles.Clear();
+            uvs.Clear();
+            colors.Clear();
+        }
+
         public Mesh PushToMesh()
         {
             var mesh = new Mesh();
@@ -17,10 +35,7 @@ namespace SCWE
             mesh.uv = uvs.ToArray();
             mesh.colors = colors.ToArray();
 
-            vertices.Clear();
-            triangles.Clear();
-            uvs.Clear();
-            colors.Clear();
+            Clear();
             return mesh;
         }
 

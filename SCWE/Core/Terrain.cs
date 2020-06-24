@@ -14,13 +14,21 @@ namespace SCWE
         public void Load(string datFile)
         {
             var fileName = Path.GetFileNameWithoutExtension(datFile);
-            if (fileName == "Chunks32")
+            if (fileName == "Chunks32h")
+            {
+                terrainReader = new TerrainReader22();
+            }
+            else if (fileName == "Chunks32")
             {
                 terrainReader = new TerrainReader129();
             }
+            else if (fileName == "Chunks")
+            {
+                terrainReader = new TerrainReader124();
+            }
             else
             {
-                throw new NotImplementedException("does not support dat file type: " + fileName);
+                throw new Exception("unexpected chunk file name: " + fileName);
             }
 
             terrainReader.Load(File.OpenRead(datFile));
@@ -101,7 +109,7 @@ namespace SCWE
 
         public void Dispose()
         {
-            terrainReader.Dispose();
+            terrainReader?.Dispose();
         }
 
         private TerrainChunk FindGarbageChunk()

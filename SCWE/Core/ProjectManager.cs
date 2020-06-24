@@ -6,19 +6,19 @@ namespace SCWE
 {
     public static class ProjectManager
     {
+        const int VertexCountThreshold = int.MaxValue - 16 * 16 * 128;
+
         public struct Config
         {
-            public string blocksDataPath;
-            public string blockMeshesPath;
+            public string dataPath;
         }
+
+        public static string DataPath { get; private set; }
 
         public static void Initialize(Config config)
         {
-            BlockMeshesManager.LoadAllMeshes(config.blockMeshesPath);
-            using (Stream s = File.OpenRead(config.blocksDataPath))
-            {
-                BlocksManager.Initialize(s);
-            }
+            DataPath = config.dataPath;
+            BlockMeshesManager.LoadAllMeshes(config.dataPath);
         }
 
         // user is responsable for creating an writable dir, passing in as tmpDir
@@ -34,40 +34,35 @@ namespace SCWE
         {
             if (!Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
-            Mesh[] ms = GenerateMesh(chunkx, chunkz, radius);
-            for (int i = 0; i < ms.Length; i++)
+            IEnumerator<TerrainMesh> ms = GenerateMesh(chunkx, chunkz, radius);
+
+            Console.Write("generating chunk mesh...");
+            var cursorPos = new Vector2Int(Console.CursorLeft, Console.CursorTop);
+
+            int count = 1;
+            if (ms.MoveNext())
             {
-                ms[i].Transform(new Matrix4x4(
+                TerrainMesh last = ms.Current;
+                List<Mesh> output = new List<Mesh>();
+                while (ms.MoveNext())
+                {
+                    Console.Write(++count);
+                    Console.SetCursorPosition(cursorPos.x, cursorPos.y);
+
+                    if (ms.Current.VertexCount > VertexCountThreshold)
+                    {
+                        output.Add(last.PushToMesh());
+                    }
+                }
+                output.Add(last.PushToMesh());
+
+                for (int i = 0; i < output.Count; i++)
+                {
+                    output[i].Transform(new Matrix4x4(
                         1, 0, 0, 0,
                         0, 0, 1, 0,
                         0, 1, 0, 0,
                         0, 0, 0, 1) * Matrix4x4.Translate(new Vector3(-(chunkx << TerrainChunk.SizeXShift), 0, -(chunkz << TerrainChunk.SizeZShift))));
-            }
-
-            if (ms.Length > 0)
-            {
-                List<Mesh> list = new List<Mesh>(ms);
-                Console.WriteLine(list.Count);
-                List<Mesh> output = new List<Mesh>();
-                while (list.Count > 1)
-                {
-                    if (list[0].vertices.LongLength + list[1].vertices.LongLength > uint.MaxValue)
-                    {
-                        output.Add(list[0]);
-                        list.RemoveAt(0);
-                    }
-                    else
-                    {
-                        var m = list[0];
-                        m.Append(list[1]);
-                        list[0] = m;
-                        list.RemoveAt(1);
-                    }
-                }
-                output.Add(list[0]);
-
-                for (int i = 0; i < output.Count; i++)
-                {
                     using (Stream s = File.OpenWrite(Path.Combine(outputDir, i + ".ply")))
                     {
                         ModelExporter.ExportPly(output[i], s);
@@ -99,7 +94,7 @@ namespace SCWE
             return count;
         }
 
-        public static Mesh[] GenerateMesh(int chunkx, int chunkz, int radius)
+        public static IEnumerator<TerrainMesh> GenerateMesh(int chunkx, int chunkz, int radius)
         {
             var terrain = WorldManager.World.Terrain;
             terrain.DisposeChunksOutOfRadius(chunkx, chunkz, radius);
@@ -119,7 +114,6 @@ namespace SCWE
                 }
             }
 
-            List<Mesh> result = new List<Mesh>();
             MeshGenerator generator = new MeshGenerator();
             for (int z = 0; z < size; z++)
             {
@@ -129,17 +123,15 @@ namespace SCWE
                     if (terrain.ChunkLoaded(pos.x, pos.y) && Vector2.Distance(pos, center) < radius)
                     {
                         generator.GenerateChunkMesh(pos.x, pos.y, terrain);
-                        Console.WriteLine($"generated chunk mesh: {pos.x}, {pos.y}");
-                        result.Add(generator.TerrainMesh.PushToMesh());
+                        yield return generator.TerrainMesh;
                     }
                 }
             }
-            return result.ToArray();
         }
 
         public static void Dispose()
         {
-            WorldManager.World.Dispose();
+            WorldManager.World?.Dispose();
         }
     }
 }

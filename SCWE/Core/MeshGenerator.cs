@@ -22,23 +22,23 @@ namespace SCWE
             TerrainChunk c01 = terrain.GetChunk(chunkx - 1, chunkz);
             TerrainChunk c02 = terrain.GetChunk(chunkx - 1, chunkz + 1);
 
-            for (int z = 0; z < 16; z++)
+            for (int z = 0; z < TerrainChunk.SizeZ; z++)
             {
-                for (int x = 0; x < 16; x++)
+                for (int x = 0; x < TerrainChunk.SizeX; x++)
                 {
                     switch (x)
                     {
                         case 0:
                             if (c01 == null || z == 0 && c00 == null || z == TerrainChunk.SizeZMinusOne && c02 == null) continue;
                             goto default;
-                        case TerrainChunk.SizeXMinusOne:
+                        case 15:
                             if (c21 == null || z == 0 && c20 == null || z == TerrainChunk.SizeZMinusOne && c22 == null) continue;
                             goto default;
                         default:
                             if (z == 0 && c10 == null || z == TerrainChunk.SizeZMinusOne && c12 == null) continue;
 
                             // if (x == 0) Debug.Log("0");
-                            for (int y = 1; y < 127; y++)
+                            for (int y = 1; y < TerrainChunk.SizeYMinusOne; y++)
                             {
 #if DEBUG
                                 try
@@ -49,7 +49,7 @@ namespace SCWE
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.WriteLine("{0}, {1}, {2}", bx + x, y, bz + z);
+                                    Console.WriteLine("{0}, {1}, {2}: {3}", bx + x, y, bz + z, c11.GetCellValue(x, y, z));
                                     Console.WriteLine(e);
                                     Console.ReadLine();
                                 }

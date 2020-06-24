@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SCWE", "SCWE\SCWE.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCWE.Windows", "SCWE.Windows\SCWE.Windows.csproj", "{48D7B1D6-1113-4DFF-8C9E-E1B4DC9AC945}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockDataUpdater", "BlockDataUpdater\BlockDataUpdater.csproj", "{A7E1A742-48B8-4656-B456-5F58D08A0F89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{48D7B1D6-1113-4DFF-8C9E-E1B4DC9AC945}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48D7B1D6-1113-4DFF-8C9E-E1B4DC9AC945}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48D7B1D6-1113-4DFF-8C9E-E1B4DC9AC945}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
