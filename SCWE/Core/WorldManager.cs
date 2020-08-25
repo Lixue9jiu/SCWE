@@ -49,7 +49,7 @@ namespace SCWE
                 throw new Exception("Chunks.dat not presented");
             }
 
-            string blockDataPath = Path.Combine(ProjectManager.DataPath, "BlocksData129.csv");
+            string blockDataPath = Path.Combine(ProjectManager.Settings.DataPath, "BlocksData.csv");
             if (chunkFileName == "Chunks32h.dat")
             {
                 TerrainChunk.SetDimensions(16, 256, 16);

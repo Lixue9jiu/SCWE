@@ -26,17 +26,17 @@ namespace SCWEWindows
 
         static void BlockLoadingTest()
         {
-            ProjectManager.Initialize(new ProjectManager.Config { dataPath = "../../data" });
+            ProjectManager.Initialize(new ProjectManager.Config { DataPath = "../../data" });
             Console.ReadLine();
         }
 
         static void WorldLoadingTest()
         {
-            ProjectManager.Initialize(new ProjectManager.Config { dataPath = "../../data" });
-            ProjectManager.LoadWorld("temp", "../../data/Lancelot.scworld");
-            var chunk = WorldManager.Project.PlayerPosition;
-            ProjectManager.GenerateMesh((int)chunk.x >> 4, (int)chunk.z >> 4, 20, "output");
-            Console.ReadLine();
+            //ProjectManager.Initialize(new ProjectManager.Config { DataPath = "../../data" });
+            //ProjectManager.LoadWorld("temp", "../../data/Lancelot.scworld");
+            //var chunk = WorldManager.Project.PlayerPosition;
+            //MeshGenerator.GenerateMesh((int)chunk.x >> 4, (int)chunk.z >> 4, 20, "output");
+            //Console.ReadLine();
         }
 
         static void ChunkTest()
@@ -58,7 +58,7 @@ namespace SCWEWindows
             terrain.SetChunk(0, 0, chunk);
             MeshGenerator g = new MeshGenerator();
             g.GenerateChunkMesh(0, 0, terrain);
-            Mesh mesh = g.TerrainMesh.PushToMesh();
+            Mesh mesh = g.TerrainMesh.ToMesh();
 
             ModelExporter.ExportPly(mesh, "output.ply", ModelExporter.DefaultOptions ^ ModelExporter.Options.UseBinary);
             ModelExporter.ExportPly(mesh, "outputb.ply");
@@ -70,7 +70,7 @@ namespace SCWEWindows
             m.Quad(new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0), new Vector3(1, 0, 0), 0, Color.white);
             m.Quad(new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 1, 1), new Vector3(0, 0, 1), 0, Color.white);
             m.Quad(new Vector3(0, 0, 0), new Vector3(1, 0, 0), new Vector3(1, 0, 1), new Vector3(0, 0, 1), 0, Color.white);
-            Mesh mesh = m.PushToMesh();
+            Mesh mesh = m.ToMesh();
             ModelExporter.ExportPly(mesh, "output.ply");
 
             Console.WriteLine(File.ReadAllText("output.ply"));

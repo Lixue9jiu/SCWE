@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tables>
+  <table language="en">
+    <string key="input_file">enter path to a .scworld file: </string>
+    <string key="file_not_found">cannot find the given file!</string>
+    <string key="enter_exit">press Enter to exit</string>
+    <string key="input_center_chunk">enter the chunk at center (leave it empty to use player's position): </string>
+    <string key="input_radius">enter the search radius in chunks (leave it empty to use 64): </string>
+    <string key="input_vertex_count">enter the maximum vertices in a model (leave it empty to use 1,000,000): </string>
+    <string key="input_thread_count">enter number of threads to use (leave it empty to use {0}): </string>
+    <string key="finish_config">config finished
+center chunk: {0}
+radius: {1}
+number of worker threads: {2}
+chunks found: {3} chunks
+models will be written to {4}</string>
+    <string key="non_empty_folder_warning">! ! ! ! ! ! ! WARNING ! ! ! ! ! ! !
+the output folder is not empty, proceeding will override current content</string>
+    <string key="enter_generate">press Enter to start generating model, press any other key to exit</string>
+    <string key="generate_success">generated {0} models in {1}</string>
+    <string key="s">s</string>
+    <string key="ms">ms</string>
+    <string key="error">an error has occured</string>
+    <string key="y_confirm">press Y to continue</string>
+  </table>
+  <table language="zh">
+    <string key="input_file">请输入.scworld文件路径：</string>
+    <string key="file_not_found">找不到输入的文件！</string>
+    <string key="enter_exit">按Enter键退出</string>
+    <string key="input_center_chunk">输入中心区块（留空使用玩家所在区块）：</string>
+    <string key="input_radius">输入半径（留空使用 64 ）：</string>
+    <string key="input_vertex_count">输入一个模型的最大顶点数（留空使用 100,0000 ）：</string>
+    <string key="input_thread_count">输入线程数（留空使用 {0} ）：</string>
+    <string key="finish_config">配置完成
+中心区块：{0}
+半径：{1}
+使用的线程数：{2}
+符合条件的区块有 {3} 个
+模型会被存入 {4}</string>
+    <string key="non_empty_folder_warning">! ! ! ! ! ! ! 警告 ! ! ! ! ! ! !
+输出文件夹不是空的，继续生成会清空输出文件夹</string>
+    <string key="enter_generate">按Enter开始生成模型，按其他键退出</string>
+    <string key="generate_success">生成成功，总共生成了 {0} 个模型，用时 {1}</string>
+    <string key="s">秒</string>
+    <string key="ms">毫秒</string>
+    <string key="error">发生了错误</string>
+    <string key="y_confirm">按下 Y 以继续：</string>
+  </table>
+</tables>

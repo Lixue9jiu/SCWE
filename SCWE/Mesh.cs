@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SCWE
@@ -19,6 +21,46 @@ namespace SCWE
                 triangles = new uint[0],
                 uv = new Vector2[0],
                 colors = new Color[0],
+            };
+        }
+
+        public static Mesh Combine(IEnumerable<Mesh> meshes)
+        {
+            List<Vector3> vertices = new List<Vector3>();
+            List<uint> tri = new List<uint>();
+            List<Vector2> uvs = new List<Vector2>();
+            List<Color> colors = new List<Color>();
+
+            var iter = meshes.GetEnumerator();
+            if (iter.MoveNext())
+            {
+                uint vertexCount = (uint)iter.Current.vertices.LongLength;
+                vertices.AddRange(iter.Current.vertices);
+                tri.AddRange(iter.Current.triangles);
+                uvs.AddRange(iter.Current.uv);
+                colors.AddRange(iter.Current.colors);
+                while (iter.MoveNext())
+                {
+                    var m = iter.Current;
+                    vertices.AddRange(m.vertices);
+                    var m_tri = m.triangles;
+                    var count = m_tri.Length;
+                    for (int i = 0; i < count; i++)
+                    {
+                        tri.Add(m_tri[i] + vertexCount);
+                    }
+                    uvs.AddRange(m.uv);
+                    colors.AddRange(m.colors);
+                    vertexCount += (uint)m.vertices.LongLength;
+                }
+            }
+
+            return new Mesh
+            {
+                vertices = vertices.ToArray(),
+                triangles = tri.ToArray(),
+                uv = uvs.ToArray(),
+                colors = colors.ToArray()
             };
         }
 

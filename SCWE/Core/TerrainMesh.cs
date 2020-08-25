@@ -27,7 +27,7 @@ namespace SCWE
             colors.Clear();
         }
 
-        public Mesh PushToMesh()
+        public Mesh ToMesh()
         {
             var mesh = new Mesh();
             mesh.vertices = vertices.ToArray();
@@ -35,7 +35,6 @@ namespace SCWE
             mesh.uv = uvs.ToArray();
             mesh.colors = colors.ToArray();
 
-            Clear();
             return mesh;
         }
 

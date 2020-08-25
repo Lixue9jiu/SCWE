@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace SCWE
 {
-    public class Terrain : IDisposable
+    public class Terrain : IDisposable, IChunkProvider
     {
         ITerrainReader terrainReader;
         Dictionary<Vector2Int, TerrainChunk> chunks = new Dictionary<Vector2Int, TerrainChunk>();
 
-        Queue<WeakReference<TerrainChunk>> garbagedChunks = new Queue<WeakReference<TerrainChunk>>();
+        HashSet<Vector2Int> garbagedChunks = new HashSet<Vector2Int>();
+
+        public IEnumerable<Vector2Int> LoadedChunks => chunks.Keys;
 
         public void Load(string datFile)
         {
@@ -41,13 +44,14 @@ namespace SCWE
 
         public bool ChunkLoaded(int x, int z)
         {
-            return chunks.ContainsKey(new Vector2Int(x, z));
+            var pos = new Vector2Int(x, z);
+            return chunks.ContainsKey(pos) && !garbagedChunks.Contains(pos);
         }
 
         public TerrainChunk GetChunk(int x, int z)
         {
             var pos = new Vector2Int(x, z);
-            if (chunks.ContainsKey(pos))
+            if (ChunkLoaded(x, z))
             {
                 return chunks[pos];
             }
@@ -57,7 +61,7 @@ namespace SCWE
         public void SetChunk(int x, int z, TerrainChunk chunk)
         {
             var pos = new Vector2Int(x, z);
-            if (chunks.ContainsKey(pos))
+            if (ChunkLoaded(x, z))
             {
                 DisposeChunk(x, z);
             }
@@ -71,11 +75,15 @@ namespace SCWE
 
         public TerrainChunk LoadChunk(int x, int z)
         {
+            var pos = new Vector2Int(x, z);
+            if (chunks.ContainsKey(pos))
+            {
+                garbagedChunks.Remove(pos);
+                return chunks[pos];
+            }
+
             if (terrainReader.ChunkExist(x, z))
             {
-                var pos = new Vector2Int(x, z);
-                if (chunks.ContainsKey(pos)) return chunks[pos];
-
                 TerrainChunk chunk = FindGarbageChunk();
                 terrainReader.ReadChunk(x, z, chunk);
                 chunks[pos] = chunk;
@@ -99,11 +107,10 @@ namespace SCWE
 
         public void DisposeChunk(int x, int z)
         {
-            if (terrainReader.ChunkExist(x, z))
+            var pos = new Vector2Int(x, z);
+            if (chunks.ContainsKey(pos))
             {
-                var pos = new Vector2Int(x, z);
-                garbagedChunks.Enqueue(new WeakReference<TerrainChunk>(chunks[pos]));
-                chunks.Remove(pos);
+                garbagedChunks.Add(pos);
             }
         }
 
@@ -114,13 +121,13 @@ namespace SCWE
 
         private TerrainChunk FindGarbageChunk()
         {
-            while (garbagedChunks.Count > 0)
+            if (garbagedChunks.Count > 0)
             {
-                var reference = garbagedChunks.Dequeue();
-                if (reference.TryGetTarget(out TerrainChunk chunk))
-                {
-                    return chunk;
-                }
+                var f = garbagedChunks.First();
+                garbagedChunks.Remove(f);
+                var res = chunks[f];
+                chunks.Remove(f);
+                return res;
             }
             return new TerrainChunk();
         }

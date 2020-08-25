@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.IO;
 using System.Collections.Generic;
 
 namespace SCWE
@@ -8,7 +8,95 @@ namespace SCWE
     {
         public readonly TerrainMesh TerrainMesh = new TerrainMesh();
 
-        public void GenerateChunkMesh(int chunkx, int chunkz, Terrain terrain)
+        public static Vector2Int[] neighbors =
+        {
+            new Vector2Int(1, 0),
+            new Vector2Int(-1, 0),
+            new Vector2Int(0, 1),
+            new Vector2Int(0, -1),
+            new Vector2Int(1, 1),
+            new Vector2Int(1, -1),
+            new Vector2Int(-1, 1),
+            new Vector2Int(-1, -1)
+        };
+
+        public static int[] opposite =
+        {
+            1,
+            0,
+            3,
+            2,
+            7,
+            6,
+            5,
+            4
+        };
+
+        public static void GenerateMesh(IMeshGenerationManager manager, int chunkx, int chunkz, int radius, string outputDir)
+        {
+            if (!Directory.Exists(outputDir))
+                Directory.CreateDirectory(outputDir);
+
+            var terrain = WorldManager.World.Terrain;
+            foreach (var p in terrain.LoadedChunks)
+                terrain.DisposeChunk(p.x, p.y);
+
+            Console.WriteLine("generating chunk mesh...");
+            var cursorPos = new Vector2Int(Console.CursorLeft, Console.CursorTop);
+
+            //int count = 0;
+            int file_count = 0;
+
+            manager.GenerateMeshes(chunkx, chunkz, radius, ProjectManager.Settings.VertexCountThreshold, () =>
+            {
+                //Console.Write(++count);
+                //Console.SetCursorPosition(cursorPos.x, cursorPos.y);
+            }, (tm) =>
+            {
+                ExportMesh(chunkx, chunkz, tm, Path.Combine(outputDir, (++file_count) + ".ply"));
+            });
+            while (manager.PollEvents())
+            {
+            }
+        }
+
+        private static void ExportMesh(int chunkx, int chunkz, Mesh m, string outputPath)
+        {
+            m.Transform(new Matrix4x4(
+                        1, 0, 0, 0,
+                        0, 0, 1, 0,
+                        0, 1, 0, 0,
+                        0, 0, 0, 1) * Matrix4x4.Translate(new Vector3(-(chunkx << TerrainChunk.SizeXShift), 0, -(chunkz << TerrainChunk.SizeZShift))));
+            using (Stream s = File.OpenWrite(outputPath))
+            {
+                ModelExporter.ExportPly(m, s);
+            }
+        }
+
+        public static int CheckChunkCount(int chunkx, int chunkz, int radius)
+        {
+            var terrain = WorldManager.World.Terrain;
+
+            int count = 0;
+            var center = new Vector2(chunkx, chunkz);
+            int startx = chunkx - radius;
+            int startz = chunkz - radius;
+            int size = 2 * radius;
+
+            for (int z = 0; z < size; z++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    var pos = new Vector2Int(x + startx, z + startz);
+                    if (terrain.ChunkExists(x + startx, z + startz) && Vector2.Distance(pos, center) < radius)
+                        count++;
+                }
+            }
+
+            return count;
+        }
+
+        public void GenerateChunkMesh(int chunkx, int chunkz, IChunkProvider terrain)
         {
             int bx = chunkx << TerrainChunk.SizeXShift;
             int bz = chunkz << TerrainChunk.SizeZShift;
@@ -61,7 +149,41 @@ namespace SCWE
             }
         }
 
-        public void GenerateBlockMesh(int x, int y, int z, int value, Terrain terrain)
+        public static IEnumerable<Vector2Int> ScanlineIter(Vector2Int center, int radius)
+        {
+            int startx = center.x - radius;
+            int startz = center.y - radius;
+            int size = 2 * radius;
+
+            for (int z = 0; z < size; z++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    yield return new Vector2Int(startx + x, startz + z);
+                }
+            }
+        }
+
+        public static IEnumerable<Vector2Int> SpiralIter(Vector2Int center, int radius)
+        {
+            int currentRds = 1;
+
+            yield return center;
+
+            while (currentRds <= radius)
+            {
+                for (int i = -currentRds; i < currentRds; i++)
+                {
+                    yield return new Vector2Int(center.x + currentRds, center.y + i);
+                    yield return new Vector2Int(center.x - currentRds, center.y - i);
+                    yield return new Vector2Int(center.x - i, center.y + currentRds);
+                    yield return new Vector2Int(center.x + i, center.y - currentRds);
+                }
+                currentRds++;
+            }
+        }
+
+        public void GenerateBlockMesh(int x, int y, int z, int value, IChunkProvider terrain)
         {
             int content = TerrainChunk.GetContent(value);
             if (BlocksManager.IsTransparent[content])
@@ -139,8 +261,6 @@ namespace SCWE
             int res = furniture.Resolution;
             Matrix4x4 matrix = Matrix4x4.Scale(Vector3.one / res);
             float uvBlockSize = 0.0625f / res;
-
-            int[] mask = new int[res * res];
             int u, v, n, w, h, j, i, l, k;
 
             int[] off;
@@ -158,7 +278,7 @@ namespace SCWE
                 for (x[d] = -1; x[d] < res;)
                 {
                     //Debug.LogFormat("x[d]: {0}", x[d]);
-                    mask = new int[res * res];
+                    int[] mask = new int[res * res];
                     for (n = 0; n < mask.Length; n++)
                     {
                         mask[n] = -1;
@@ -270,7 +390,7 @@ namespace SCWE
 
             //Debug.LogFormat("{0}, {1}, {2}", vertices.Count, colors.Count, uvs.Count);
 
-            mesh = terrain.PushToMesh();
+            mesh = terrain.ToMesh();
             mesh.Transform(matrix);
         }
     }

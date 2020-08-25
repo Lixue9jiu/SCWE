@@ -2,6 +2,9 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using System.Linq;
+using System.Globalization;
 
 namespace SCWE.Windows
 {
@@ -9,17 +12,27 @@ namespace SCWE.Windows
     {
         const string DataFolder = "data";
         const string TempFolder = "temp";
-        const string Usage = "usage: SCWE.Windows.exe [-c chunkx,chunky] [-r radius] scworld_file_name";
+        const string Usage = "usage: SCWE.Windows.exe [-c chunkx,chunky] [-r radius] [-v vertex_threshhold] [-j thread_count] [-lang en|zh] scworld_file_name";
 
         static void Main(string[] args)
         {
             var commandArgs = ReadArgs(args);
+
+            if (commandArgs.options.ContainsKey("lang"))
+            {
+                Language.Initialize(commandArgs.options["lang"]);
+            }
+            else
+            {
+                Language.Initialize(CultureInfo.CurrentCulture.TwoLetterISOLanguageName);
+            }
+
             string worldFile;
             if (commandArgs.arguments.Length == 0)
             {
                 Console.WriteLine(Usage);
                 Console.WriteLine();
-                worldFile = ReadInput("请输入.scworld文件路径：").Replace("\"", "");
+                worldFile = ReadInput(Language.GetString("input_file")).Replace("\"", "");
             }
             else
             {
@@ -27,17 +40,17 @@ namespace SCWE.Windows
             }
             if (!File.Exists(worldFile))
             {
-                Console.WriteLine("找不到输入的文件！");
-                ReadInput("按Enter键退出");
+                Console.WriteLine(Language.GetString("file_not_found"));
+                ReadInput(Language.GetString("enter_exit"));
                 return;
             }
 
             Vector2Int? centerChunk;
             try
             {
-                var center = GetOptionOrDefault("c", "输入中心区块（留空使用玩家所在区块）：", commandArgs);
-                var c = center.Split(',');
-                centerChunk = new Vector2Int(int.Parse(c[0]), int.Parse(c[1]));
+                var center = GetOptionOrDefault("c", Language.GetString("input_center_chunk"), commandArgs);
+                var c = center.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                centerChunk = new Vector2Int(int.Parse(c[0].Trim()), int.Parse(c[1].Trim()));
             }
             catch(Exception e)
             {
@@ -50,20 +63,53 @@ namespace SCWE.Windows
             int radius;
             try
             {
-                var r = GetOptionOrDefault("r", "输入半径（留空使用 1 ）：", commandArgs);
+                var r = GetOptionOrDefault("r", Language.GetString("input_radius"), commandArgs);
                 radius = int.Parse(r);
+                if (radius < 1)
+                {
+                    throw new Exception("Illegal argument");
+                }
             }
             catch (Exception e)
             {
 #if DEBUG
                 Console.WriteLine(e);
 #endif
-                radius = 1;
+                radius = 64;
+            }
+
+            int vertex_thresh;
+            try
+            {
+                var r = GetOptionOrDefault("v", Language.GetString("input_vertex_count"), commandArgs);
+                vertex_thresh = int.Parse(r);
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                Console.WriteLine(e);
+#endif
+                vertex_thresh = 1000000;
+            }
+
+            int threadCount;
+            try
+            {
+                var r = GetOptionOrDefault("j", string.Format(Language.GetString("input_thread_count"), Environment.ProcessorCount), commandArgs);
+                threadCount = int.Parse(r);
+                threadCount = Math.Max(1, threadCount);
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                Console.WriteLine(e);
+#endif
+                threadCount = Environment.ProcessorCount;
             }
 
             try
             {
-                ProjectManager.Initialize(new ProjectManager.Config { dataPath = DataFolder });
+                ProjectManager.Initialize(new ProjectManager.Config { DataPath = DataFolder, VertexCountThreshold = vertex_thresh });
                 ProjectManager.LoadWorld(TempFolder, worldFile);
 
                 if (!centerChunk.HasValue)
@@ -74,23 +120,23 @@ namespace SCWE.Windows
 
                 string OutputFolder = Path.Combine(Path.GetDirectoryName(worldFile), Path.GetFileNameWithoutExtension(worldFile));
 
-                int chunkCount = ProjectManager.CheckChunkCount(centerChunk.Value.x, centerChunk.Value.y, radius);
+                int chunkCount = MeshGenerator.CheckChunkCount(centerChunk.Value.x, centerChunk.Value.y, radius);
                 Console.WriteLine();
-                Console.WriteLine("配置完成");
-                Console.WriteLine("中心区块：" + centerChunk.Value);
-                Console.WriteLine("半径：" + radius);
-                Console.WriteLine("符合条件的区块有：{0} 个", chunkCount);
-                Console.WriteLine("模型会被存入同目录下的 {0} 文件夹", OutputFolder);
+                Console.WriteLine(Language.GetString("finish_config"), centerChunk.Value, radius, threadCount, chunkCount, OutputFolder);
 
                 var f = Directory.Exists(OutputFolder) ? Directory.GetFiles(OutputFolder) : new string[0];
                 if (f.Length != 0)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("！！！！！！！警告！！！！！！!");
-                    Console.WriteLine("输出文件夹不是空的，继续生成会清空输出文件夹");
+                    Console.WriteLine(Language.GetString("non_empty_folder_warning"));
+                    Console.Write(Language.GetString("y_confirm"));
+                    if (Console.ReadKey(true).Key != ConsoleKey.Y)
+                    {
+                        return;
+                    }
                     Console.WriteLine();
                 }
-                Console.Write("按Enter开始生成模型，按其他键退出");
+                Console.Write(Language.GetString("enter_generate"));
 
                 if (Console.ReadKey(true).Key != ConsoleKey.Enter)
                 {
@@ -105,18 +151,39 @@ namespace SCWE.Windows
                     File.Delete(file);
                 }
 
-                Stopwatch watch = Stopwatch.StartNew();
-                ProjectManager.GenerateMesh(centerChunk.Value.x, centerChunk.Value.y, radius, OutputFolder);
-                Console.WriteLine("生成成功，总共生成了 {0} 个模型，用时 {1}ms", Directory.GetFiles(OutputFolder).Length, watch.ElapsedMilliseconds);
+                if (Directory.Exists(Path.Combine(TempFolder, "EmbeddedContent")))
+                {
+                    foreach (string fname in Directory.EnumerateFiles(Path.Combine(TempFolder, "EmbeddedContent"), "*.scbtex"))
+                    {
+                        File.Copy(fname, Path.Combine(OutputFolder, Path.GetFileNameWithoutExtension(fname) + ".png"));
+                    }
+                }
 
-                Console.Write("按Enter键退出");
+                Stopwatch watch = Stopwatch.StartNew();
+                IMeshGenerationManager m;
+                if (threadCount == 1)
+                {
+                    m = new SingleThreadGenerationManager();
+                }
+                else
+                {
+                    m = new MultiThreadGenerationManager(threadCount);
+                }
+                MeshGenerator.GenerateMesh(m, centerChunk.Value.x, centerChunk.Value.y, radius, OutputFolder);
+                Console.WriteLine(Language.GetString("generate_success"),
+                                  Directory.GetFiles(OutputFolder).Length,
+                                  watch.ElapsedMilliseconds > 1000 ?
+                                  string.Format("{0:0.00} " + Language.GetString("s"), watch.Elapsed.TotalSeconds) :
+                                  string.Format("{0:0.00} " + Language.GetString("ms"), watch.Elapsed.TotalMilliseconds));
+
+                Console.Write(Language.GetString("enter_exit"));
                 BlockUntilEnter();
             }
             catch (Exception e)
             {
-                Console.WriteLine("发生了错误");
+                Console.WriteLine(Language.GetString("error"));
                 Console.WriteLine(e);
-                Console.Write("按Enter键退出");
+                Console.Write(Language.GetString("enter_exit"));
                 BlockUntilEnter();
             }
             finally
