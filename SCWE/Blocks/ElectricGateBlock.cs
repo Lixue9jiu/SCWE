@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public class ElectricGateBlock : Block, INormalBlock
     {

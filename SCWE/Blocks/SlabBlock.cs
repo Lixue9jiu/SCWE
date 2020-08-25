@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public class SlabBlock : Block, INormalBlock, IPaintableBlock
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public class PaintableCubeBlock : Block, ICubeBlock, IPaintableBlock
     {

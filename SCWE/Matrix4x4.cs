@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Numerics;
 
 namespace SCWE
 {
@@ -91,12 +88,12 @@ namespace SCWE
                 Mathf.Cos(z), -Mathf.Sin(z), 0, 0,
                 Mathf.Sin(z), Mathf.Cos(z), 0, 0,
                 0, 0, 1, 0,
-                0, 0, 0, 1) * 
+                0, 0, 0, 1) *
                 new Matrix4x4(
                     Mathf.Cos(y), 0, Mathf.Sin(y), 0,
                     0, 1, 0, 0,
                     -Mathf.Sin(y), 0, Mathf.Cos(y), 0,
-                    0, 0, 0, 1) * 
+                    0, 0, 0, 1) *
                     new Matrix4x4(
                         1, 0, 0, 0,
                         0, Mathf.Cos(x), -Mathf.Sin(x), 0,

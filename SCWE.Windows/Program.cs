@@ -1,10 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
-using System.Linq;
 using System.Globalization;
+using System.IO;
 
 namespace SCWE.Windows
 {
@@ -52,7 +50,7 @@ namespace SCWE.Windows
                 var c = center.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 centerChunk = new Vector2Int(int.Parse(c[0].Trim()), int.Parse(c[1].Trim()));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 #if DEBUG
                 Console.WriteLine(e);

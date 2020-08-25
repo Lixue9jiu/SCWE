@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 
 namespace SCWE
@@ -91,7 +90,7 @@ namespace SCWE
                                 try
                                 {
 #endif
-                                    GenerateBlockMesh(bx + x, y, bz + z, c11.GetCellValue(bx + x, y, bz + z), terrain);
+                                GenerateBlockMesh(bx + x, y, bz + z, c11.GetCellValue(bx + x, y, bz + z), terrain);
 #if DEBUG
                                 }
                                 catch (Exception e)

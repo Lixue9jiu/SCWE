@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SCWE;
+using System;
 using System.IO;
-using System.Text;
-using SCWE;
 
 namespace SCWEWindows
 {

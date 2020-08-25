@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public class WoodBlock : Block, ICubeBlock
     {

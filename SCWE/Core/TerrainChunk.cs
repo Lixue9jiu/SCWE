@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public class TerrainChunk
     {
         public static int SizeXShift { get; private set; }
         public static int SizeYShift { get; private set; }
         public static int SizeZShift { get; private set; }
-        
+
         public static int SizeX { get; private set; }
         public static int SizeY { get; private set; }
         public static int SizeZ { get; private set; }
-        
+
         public static int SizeXMinusOne { get; private set; }
         public static int SizeYMinusOne { get; private set; }
         public static int SizeZMinusOne { get; private set; }

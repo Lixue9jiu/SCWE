@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SCWE
 {
@@ -15,7 +13,7 @@ namespace SCWE
             this.y = y;
         }
 
-        public static Vector2 operator+(Vector2 a, Vector2 b)
+        public static Vector2 operator +(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x + b.x, a.y + b.y);
         }

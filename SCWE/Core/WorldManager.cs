@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using SCWE.Utils;
+using System;
 using System.IO;
-using SCWE.Utils;
 
 namespace SCWE
 {
@@ -42,7 +40,7 @@ namespace SCWE
             Project = new ProjectData(dir);
             string chunkFileName = Project.Version >= 2.2f ? "Chunks32h.dat" : Project.Version >= 1.29f ? "Chunks32.dat" : "Chunks.dat";
             ChunkDat = Path.Combine(dir, chunkFileName);
-            if (!File.Exists(ChunkDat)) 
+            if (!File.Exists(ChunkDat))
             {
                 Project = null;
                 ChunkDat = null;

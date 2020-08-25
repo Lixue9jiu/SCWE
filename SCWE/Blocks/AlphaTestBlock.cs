@@ -1,4 +1,4 @@
-﻿namespace SCWE 
+﻿namespace SCWE
 {
     public class AlphaTestBlock : CubeBlock
     {

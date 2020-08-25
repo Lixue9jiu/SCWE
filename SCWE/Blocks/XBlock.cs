@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public class XBlock : Block, INormalBlock
     {

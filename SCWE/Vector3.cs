@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SCWE
+﻿namespace SCWE
 {
     public struct Vector3
     {
