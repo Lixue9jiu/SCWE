@@ -32,47 +32,6 @@ namespace SCWE
             4
         };
 
-        public static void GenerateMesh(IMeshGenerationManager manager, int chunkx, int chunkz, int radius, string outputDir)
-        {
-            if (!Directory.Exists(outputDir))
-                Directory.CreateDirectory(outputDir);
-
-            var terrain = WorldManager.World.Terrain;
-            foreach (var p in terrain.LoadedChunks)
-                terrain.DisposeChunk(p.x, p.y);
-
-            Console.WriteLine("generating chunk mesh...");
-            var cursorPos = new Vector2Int(Console.CursorLeft, Console.CursorTop);
-
-            //int count = 0;
-            int file_count = 0;
-
-            manager.GenerateMeshes(chunkx, chunkz, radius, ProjectManager.Settings.VertexCountThreshold, () =>
-            {
-                //Console.Write(++count);
-                //Console.SetCursorPosition(cursorPos.x, cursorPos.y);
-            }, (tm) =>
-            {
-                ExportMesh(chunkx, chunkz, tm, Path.Combine(outputDir, (++file_count) + ".ply"));
-            });
-            while (manager.PollEvents())
-            {
-            }
-        }
-
-        private static void ExportMesh(int chunkx, int chunkz, Mesh m, string outputPath)
-        {
-            m.Transform(new Matrix4x4(
-                        1, 0, 0, 0,
-                        0, 0, 1, 0,
-                        0, 1, 0, 0,
-                        0, 0, 0, 1) * Matrix4x4.Translate(new Vector3(-(chunkx << TerrainChunk.SizeXShift), 0, -(chunkz << TerrainChunk.SizeZShift))));
-            using (Stream s = File.OpenWrite(outputPath))
-            {
-                ModelExporter.ExportPly(m, s);
-            }
-        }
-
         public static int CheckChunkCount(int chunkx, int chunkz, int radius)
         {
             var terrain = WorldManager.World.Terrain;

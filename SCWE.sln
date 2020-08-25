@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCWE.Windows", "SCWE.Window
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockDataUpdater", "BlockDataUpdater\BlockDataUpdater.csproj", "{A7E1A742-48B8-4656-B456-5F58D08A0F89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCWE.Core", "SCWE.Core\SCWE.Core.csproj", "{BCDEAC50-39BC-4CB0-904A-85A2F58AE11C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E1A742-48B8-4656-B456-5F58D08A0F89}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCDEAC50-39BC-4CB0-904A-85A2F58AE11C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCDEAC50-39BC-4CB0-904A-85A2F58AE11C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCDEAC50-39BC-4CB0-904A-85A2F58AE11C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCDEAC50-39BC-4CB0-904A-85A2F58AE11C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

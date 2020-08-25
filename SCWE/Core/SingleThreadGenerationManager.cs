@@ -25,7 +25,9 @@ namespace SCWE
             foreach (var pos in MeshGenerator.SpiralIter(center, radius))
             {
                 if (!masks.ContainsKey(pos))
-                    masks.Add(pos, 0);
+                {
+                    AddMask(masks, pos, terrain);
+                }
 
                 if (terrain.ChunkExists(pos.x, pos.y) && Vector2.Distance(pos, center) < radius)
                 {
@@ -42,8 +44,9 @@ namespace SCWE
                 {
                     var pos2 = pos + MeshGenerator.neighbors[i];
                     if (!masks.ContainsKey(pos2))
-                        masks.Add(pos2, 0);
-
+                    {
+                        AddMask(masks, pos2, terrain);
+                    }
                     masks[pos2] |= (byte)(1 << MeshGenerator.opposite[i]);
 
                     if (masks[pos2] == 0xff)
@@ -52,6 +55,20 @@ namespace SCWE
                     }
                 }
             }
+        }
+
+        private static void AddMask(Dictionary<Vector2Int, byte> masks, Vector2Int pos, Terrain terrain)
+        {
+            int mask = 0;
+            for (int i = 0; i < MeshGenerator.neighbors.Length; i++)
+            {
+                var pos2 = pos + MeshGenerator.neighbors[i];
+                if (!terrain.ChunkExists(pos2.x, pos2.y))
+                {
+                    mask |= (byte)(1 << i);
+                }
+            }
+            masks.Add(pos, 0);
         }
 
         public void GenerateMeshes(int chunkx, int chunkz, int radius, int maxVertexCount, Action progress, Action<Mesh> callback)

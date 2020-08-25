@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SCWE
@@ -59,7 +58,14 @@ namespace SCWE
 
         public void WaitAll()
         {
-            Task.WaitAll(tasks);
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                var t = tasks[i];
+                if (t != null)
+                {
+                    t.Wait();
+                }
+            }
         }
     }
 }

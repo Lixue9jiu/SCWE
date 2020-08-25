@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="data\BlocksData129.csv">
+    <None Include="data\BlocksData.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="data\IronFence_Planks.ply">
