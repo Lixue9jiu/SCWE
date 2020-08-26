@@ -18,16 +18,16 @@ namespace SCWE.Windows
         {
             using (var s = File.OpenRead("languages.xml"))
             {
-                if (!LoadStrings(s, langName))
+                var e = XDocument.Load(s).Root;
+                if (!LoadStrings(e, langName))
                 {
-                    LoadStrings(s, "en");
+                    LoadStrings(e, "en");
                 }
             }
         }
 
-        private static bool LoadStrings(Stream s, string language)
+        private static bool LoadStrings(XElement elem, string language)
         {
-            XElement elem = XDocument.Load(s).Root;
             XElement lookup = elem.Elements("table").FirstOrDefault(e => e.Attribute("language").Value == language);
             if (lookup == null)
             {
