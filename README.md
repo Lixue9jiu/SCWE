@@ -6,7 +6,7 @@ Export your world into ply models, then render it with Blender or anything that 
 
 As an example, you can get great images like this one. 
 
-![Rendered with Blender](images/untitled5.png)
+![Rendered with Blender](images/untitled5_small.jpg)
 
 ## Usage
 For those who aren't familiar with CLI, double click `SCWE.Windows.exe`, and then follow the instruction provided.
