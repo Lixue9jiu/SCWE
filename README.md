@@ -1,4 +1,4 @@
-# SCWE
+# SCWE - SurvivalCraft World Exporter
 This program converts a Survivalcraft world file to ply models
 
 ## Motivation
