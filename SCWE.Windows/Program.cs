@@ -108,7 +108,19 @@ namespace SCWE.Windows
             try
             {
                 ProjectManager.Initialize(new ProjectManager.Config { DataPath = DataFolder, VertexCountThreshold = vertex_thresh });
-                ProjectManager.LoadWorld(TempFolder, worldFile);
+                var info = ProjectManager.LoadWorld(TempFolder, worldFile);
+
+                Console.WriteLine(Language.GetString("world_version") + info.worldVersion);
+                if (info.result != LoadingResult.Success)
+                {
+                    Console.WriteLine(Language.GetString("error"));
+                    Console.WriteLine(info.msg);
+                    if (info.e != null)
+                        Console.WriteLine(info.e.StackTrace);
+                    Console.Write(Language.GetString("enter_exit"));
+                    BlockUntilEnter();
+                    return;
+                }
 
                 if (!centerChunk.HasValue)
                 {
@@ -199,7 +211,7 @@ namespace SCWE.Windows
             foreach (var p in terrain.LoadedChunks)
                 terrain.DisposeChunk(p.x, p.y);
 
-            Console.WriteLine("generating chunk mesh...");
+            Console.WriteLine(Language.GetString("generating_chunk_mesh"));
             var cursorPos = new Vector2Int(Console.CursorLeft, Console.CursorTop);
 
             int count = 0;

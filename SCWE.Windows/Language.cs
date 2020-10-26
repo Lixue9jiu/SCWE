@@ -7,11 +7,23 @@ namespace SCWE.Windows
 {
     public static class Language
     {
+        const string DEFAULT_LANG = "en";
+
+        public static Dictionary<string, string> default_lookup = new Dictionary<string, string>();
+
         public static Dictionary<string, string> str_lookup = new Dictionary<string, string>();
 
         public static string GetString(string key)
         {
-            return str_lookup[key];
+            if (str_lookup.ContainsKey(key))
+            {
+                return str_lookup[key];
+            }
+            if (default_lookup.ContainsKey(key))
+            {
+                return default_lookup[key];
+            }
+            return key;
         }
 
         public static void Initialize(string langName)
@@ -19,14 +31,12 @@ namespace SCWE.Windows
             using (var s = File.OpenRead("languages.xml"))
             {
                 var e = XDocument.Load(s).Root;
-                if (!LoadStrings(e, langName))
-                {
-                    LoadStrings(e, "en");
-                }
+                LoadStrings(e, langName, ref str_lookup);
+                LoadStrings(e, DEFAULT_LANG, ref default_lookup);
             }
         }
 
-        private static bool LoadStrings(XElement elem, string language)
+        private static bool LoadStrings(XElement elem, string language, ref Dictionary<string, string> dict)
         {
             XElement lookup = elem.Elements("table").FirstOrDefault(e => e.Attribute("language").Value == language);
             if (lookup == null)
@@ -37,7 +47,7 @@ namespace SCWE.Windows
             {
                 foreach (XElement str in lookup.Elements("string"))
                 {
-                    str_lookup.Add(str.Attribute("key").Value, str.Value);
+                    dict.Add(str.Attribute("key").Value, str.Value);
                 }
                 return true;
             }

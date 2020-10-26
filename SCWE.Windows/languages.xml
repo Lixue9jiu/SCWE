@@ -22,6 +22,9 @@ the output folder is not empty, proceeding will override current content</string
     <string key="ms">ms</string>
     <string key="error">an error has occured</string>
     <string key="y_confirm">press Y to continue</string>
+    <string key="generating_chunk_mesh">generating chunk mesh...</string>
+    <string key="world_version">world version: </string>
+    <string key="done">done</string>
   </table>
   <table language="zh">
     <string key="input_file">请输入.scworld文件路径：</string>
@@ -45,5 +48,8 @@ the output folder is not empty, proceeding will override current content</string
     <string key="ms">毫秒</string>
     <string key="error">发生了错误</string>
     <string key="y_confirm">按下 Y 以继续：</string>
+    <string key="generating_chunk_mesh">正在生成模型...</string>
+    <string key="world_version">存档版本：</string>
+    <string key="done">完成</string>
   </table>
 </tables>

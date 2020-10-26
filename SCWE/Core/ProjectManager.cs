@@ -19,11 +19,11 @@ namespace SCWE
         }
 
         // user is responsable for creating an writable dir, passing in as tmpDir
-        public static void LoadWorld(string tmpDir, string worldPath)
+        public static LoadingInfo LoadWorld(string tmpDir, string worldPath)
         {
             using (Stream s = File.OpenRead(worldPath))
             {
-                WorldManager.LoadWorld(tmpDir, s);
+                return WorldManager.LoadWorld(tmpDir, s);
             }
         }
 
