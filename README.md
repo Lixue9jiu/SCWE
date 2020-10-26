@@ -19,7 +19,7 @@ SCWE.Windows.exe [-c chunkx,chunky] [-r radius] [-v vertex_threshhold] [-j threa
 ```
 Where an example usage could be
 ```
-SCWE.Windows.exe [-c 1,2 -r 60 -v 1000000 -j 1 example_world_name.scworld
+SCWE.Windows.exe -c 1,2 -r 60 -v 1000000 -j 1 example_world_name.scworld
 ```
 In this case, the program generates all chunks within 60-chunk from the chunk (1,2), using 1 thread, and seperate the entire model into smaller models with no more than 1,000,000 vertices before writing them to disk. 
 
