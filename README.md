@@ -1,4 +1,7 @@
 # SCWE - SurvivalCraft World Exporter
+
+[GitHub](https://github.com/Lixue9jiu/SCWE) | [Download](https://github.com/Lixue9jiu/SCWE/releases/latest)
+
 This program converts a Survivalcraft world file to ply models
 
 ## Motivation
@@ -15,7 +18,13 @@ This program is smart enough to detect the system language and default to Englis
 
 Or you can go with the programmer's way
 ```
-SCWE.Windows.exe [-c chunkx,chunky] [-r radius] [-v vertex_threshhold] [-j thread_count] [-lang en|zh] an_example_world.scworld
+SCWE.Windows.exe \
+    [-c chunkx,chunky] \
+    [-r radius] \
+    [-v vertex_threshhold] \
+    [-j thread_count] \
+    [-lang en|zh] \
+    an_example_world.scworld
 ```
 Where an example usage could be
 ```
